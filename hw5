@@ -1,0 +1,90 @@
+Code
+Driver = function(x, n, p, WhichWay){
+  if(WhichWay == "<"){                    # p(X  <  xp)
+    TrueProb = pbinom(x, n, p, lower.tail = TRUE)
+    ApproxProb = pnorm(x, mean = n*p, sd = 5, lower.tail = TRUE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else if(WhichWay == ">"){              # p(X  >  xp)
+    TrueProb = pbinom(x, n, p, lower.tail = FALSE)
+    ApproxProb = pnorm(x,mean = n*p, sd = 5, lower.tail = FALSE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else if(WhichWay == "<="){             # p(X  <= xp)
+    TrueProb = pbinom(x, n, p,lower.tail = TRUE)
+    ApproxProb = pnorm(x,mean = n*p, sd = 5, lower.tail = TRUE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else if(WhichWay == "<=*"){             # p(X  <= xp)
+    TrueProb = pbinom(x/2, n, p,lower.tail = TRUE)
+    ApproxProb = pnorm(x/2,mean = n*p, sd = 5, lower.tail = TRUE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else{                                  # p(X  >= xp)
+    TrueProb = pbinom(x, n, p, lower.tail = FALSE)
+    ApproxProb = pnorm(x,mean = n*p, sd = 5, lower.tail = FALSE) 
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }
+}
+
+Driver(7, 15, .4, "<")
+Driver(5, 30, .2, ">=")
+Driver(10, 50, .5, "<=")
+Driver(50, 200, .1, ">")
+
+Driver2 = function(x, n, p, WhichWay){
+  if(WhichWay == "<"){                    # p(X  <  xp)
+    TrueProb = pbinom(x-.5, n, p, lower.tail = TRUE)
+    ApproxProb = pnorm(x-.5, mean = n*p, sd = 5, lower.tail = TRUE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else if(WhichWay == ">"){              # p(X  >  xp)
+    TrueProb = pbinom(x+.5, n, p, lower.tail = FALSE)
+    ApproxProb = pnorm(x+.5,mean = n*p, sd = 5, lower.tail = FALSE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else if(WhichWay == "<="){             # p(X  <= xp)
+    TrueProb = pbinom(x+.5, n, p,lower.tail = TRUE)
+    ApproxProb = pnorm(x+.5,mean = n*p, sd = 5, lower.tail = TRUE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else if(WhichWay == "<=*"){            # p(X  <= xp)
+    TrueProb = pbinom((x+.5)/2, n, p,lower.tail = TRUE)
+    ApproxProb = pnorm((x+.5)/2,mean = n*p, sd = 5, lower.tail = TRUE)
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }else{                                  # p(X  >= xp)
+    TrueProb = pbinom(x-.5, n, p, lower.tail = FALSE)
+    ApproxProb = pnorm(x-.5,mean = n*p, sd = 5, lower.tail = FALSE) 
+    Difference = abs(TrueProb - ApproxProb)
+    return(Difference)
+  }
+}
+
+Driver2(7, 15, .4, "<")
+Driver2(5, 30, .2, ">=")
+Driver2(10, 50, .5, "<=")
+Driver2(50, 200, .1, ">")
+
+Driver3 = function(all, p, WhichWay){
+P = p
+N = length(all)
+whichWay = WhichWay
+noCorrection = sapply(all, function(i){
+  noCorrection = c(Driver(i, N, P, whichWay))
+})
+correction = sapply(all, function(i){
+  correction = c(Driver2(i, N, P, whichWay))
+})
+return_vector = c(mean(noCorrection), mean(correction))
+hist(noCorrection)
+hist(correction)
+plot(x = all, y = noCorrection, main = "all.n vs No correction")
+plot(x = all, y = correction, main = "all.n vs No correction")
+return(return_vector)
+}
+
+my_sequence = seq(10, 400, 2)
+matrix = Driver3(my_sequence, .5, "<=*")
+matrix
